@@ -1,0 +1,20 @@
+.movies {
+  list-style: none;
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 20px
+}
+
+.item {
+  text-align: center;
+}
+
+.item h3 {
+  margin-bottom: 0px;
+}
+
+.item p {
+  margin-top: 0px;
+}
+
