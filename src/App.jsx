@@ -2,25 +2,32 @@ import { useCallback, useState } from 'react'
 import Movies from './components/Movies/Movies.jsx'
 import { useMovies } from './hooks/useMovies.js'
 import { useSearch } from './hooks/useSearch.js'
+import ResponsivePagination from 'react-responsive-pagination'
 import debounce from 'just-debounce-it'
+import './App.css'
 
 const errStyles = { color: 'red' }
 
 function App() {
   const [sort, setSort] = useState(false)
   const { search, updateSearch, error } = useSearch('')
-  const { movies, getMovies, loading } = useMovies({ search, sort })
+  const [page, setPage] = useState(1)
+  const { movies, getMovies, loading, totalPages } = useMovies({
+    search,
+    sort,
+    page
+  })
 
   const debouncedGetMovies = useCallback(
     debounce(({ search }) => {
-      getMovies({ search })
+      getMovies({ search, page })
     }, 300),
     [getMovies]
   )
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    getMovies({ search })
+    getMovies({ search, page })
   }
 
   const handleChange = (event) => {
@@ -33,6 +40,10 @@ function App() {
     setSort(!sort)
   }
 
+  const handlePageChange = (newPage) => {
+    setPage(newPage)
+    getMovies({ search, page: newPage })
+  }
   return (
     <>
       <header>
@@ -58,6 +69,13 @@ function App() {
       </header>
 
       <main>{loading ? <h1>Loading...</h1> : <Movies movies={movies} />}</main>
+      <footer>
+        <ResponsivePagination
+          total={totalPages}
+          current={page}
+          onPageChange={(page) => handlePageChange(page)}
+        />
+      </footer>
     </>
   )
 }

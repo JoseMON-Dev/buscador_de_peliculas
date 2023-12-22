@@ -1,13 +1,14 @@
 const API_KEY = 'e08ee384'
-export async function searchMovies({ search }) {
+export async function searchMovies({ search, page = 1 }) {
   if (search === '') return null
   try {
     const response = await fetch(
-      `http://www.omdbapi.com/?apikey=${API_KEY}&s=${search}&page=2`
+      `http://www.omdbapi.com/?apikey=${API_KEY}&s=${search}&page=${page}`
     )
     const jsonResponse = await response.json()
 
     const movies = jsonResponse.Search
+    const totalPages = Math.ceil(jsonResponse.totalResults / 10)
 
     const mappedMovies = movies?.map((movie) => {
       return {
@@ -17,7 +18,7 @@ export async function searchMovies({ search }) {
         year: movie.Year
       }
     })
-    return mappedMovies
+    return { mappedMovies, totalPages }
   } catch (e) {
     throw new Error('Error searching movies')
   }
